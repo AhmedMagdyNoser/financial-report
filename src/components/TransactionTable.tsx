@@ -1,0 +1,141 @@
+import React from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { formatCurrency } from "@/utils/transaction-utils";
+import { Transaction, TransactionSort } from "@/types/transaction";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import { ArrowDown, ArrowUp } from "lucide-react";
+
+interface TransactionTableProps {
+  transactions: Transaction[];
+  className?: string;
+  sort?: TransactionSort;
+  onSortChange?: (sort: TransactionSort) => void;
+  showSortIndicators?: boolean;
+}
+
+const TransactionTable: React.FC<TransactionTableProps> = ({
+  transactions,
+  className,
+  sort,
+  onSortChange,
+  showSortIndicators = true,
+}) => {
+  const handleSortClick = (field: TransactionSort["field"]) => {
+    if (!onSortChange || !sort) return;
+
+    if (sort.field === field) {
+      // Toggle direction if same field
+      onSortChange({
+        field,
+        direction: sort.direction === "asc" ? "desc" : "asc",
+      });
+    } else {
+      // Default to descending for new field
+      onSortChange({
+        field,
+        direction: "desc",
+      });
+    }
+  };
+
+  const SortIndicator = ({ field }: { field: TransactionSort["field"] }) => {
+    if (!sort || !showSortIndicators) return null;
+
+    if (sort.field !== field) return null;
+
+    return sort.direction === "asc" ? (
+      <ArrowUp className="ml-1 h-4 w-4 inline" />
+    ) : (
+      <ArrowDown className="ml-1 h-4 w-4 inline" />
+    );
+  };
+
+  return (
+    <div className={`overflow-auto rounded-md border ${className}`}>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead
+              className="whitespace-nowrap cursor-pointer"
+              onClick={() => handleSortClick("date")}
+            >
+              Date <SortIndicator field="date" />
+            </TableHead>
+            <TableHead
+              className="cursor-pointer"
+              onClick={() => handleSortClick("category")}
+            >
+              Category <SortIndicator field="category" />
+            </TableHead>
+            <TableHead
+              className="cursor-pointer whitespace-nowrap"
+              onClick={() => handleSortClick("name")}
+            >
+              Name <SortIndicator field="name" />
+            </TableHead>
+            <TableHead
+              className="text-right whitespace-nowrap cursor-pointer"
+              onClick={() => handleSortClick("price")}
+            >
+              Amount <SortIndicator field="price" />
+            </TableHead>
+            <TableHead className="hidden md:table-cell">Notes</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {transactions.length === 0 ? (
+            <TableRow>
+              <TableCell
+                colSpan={5}
+                className="text-center py-8 text-muted-foreground"
+              >
+                No transactions found
+              </TableCell>
+            </TableRow>
+          ) : (
+            transactions.map((transaction) => (
+              <TableRow key={transaction.id} className="hover:bg-gray-50">
+                <TableCell className="whitespace-nowrap">
+                  {format(transaction.date, "MMM d, yyyy")}
+                </TableCell>
+                <TableCell>
+                  <Badge
+                    variant="outline"
+                    className="font-normal bg-gray-50 text-nowrap"
+                  >
+                    {transaction.category}
+                  </Badge>
+                </TableCell>
+                <TableCell className="whitespace-nowrap max-w-[200px] truncate">
+                  {transaction.name || "-"}
+                </TableCell>
+                <TableCell
+                  className={cn(
+                    "text-right font-medium whitespace-nowrap",
+                    transaction.price < 0 ? "text-red-600" : "text-green-600"
+                  )}
+                >
+                  {formatCurrency(transaction.price)}
+                </TableCell>
+                <TableCell className="max-w-[200px] truncate hidden md:table-cell">
+                  {transaction.notes || "-"}
+                </TableCell>
+              </TableRow>
+            ))
+          )}
+        </TableBody>
+      </Table>
+    </div>
+  );
+};
+
+export default TransactionTable;
