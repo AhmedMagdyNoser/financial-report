@@ -12,7 +12,7 @@ import { Transaction, TransactionSort } from "@/types/transaction";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import { ArrowDown, ArrowUp } from "lucide-react";
+import { AlertCircle, ArrowDown, ArrowUp } from "lucide-react";
 
 interface TransactionTableProps {
   transactions: Transaction[];
@@ -59,6 +59,8 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
     );
   };
 
+  console.log("TransactionTable transactions", transactions);
+
   return (
     <div className={`overflow-auto rounded-md border ${className}`}>
       <Table>
@@ -88,7 +90,6 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
             >
               Amount <SortIndicator field="price" />
             </TableHead>
-            <TableHead className="hidden md:table-cell">Notes</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -116,7 +117,14 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                   </Badge>
                 </TableCell>
                 <TableCell className="whitespace-nowrap max-w-[200px] truncate">
-                  {transaction.name || "-"}
+                  <div className="flex items-center gap-1.5">
+                    {transaction.name || "-"}
+                    {transaction.notes !== "\r" && (
+                      <span className="inline-flex" title={transaction.notes}>
+                        <AlertCircle className="h-4 w-4 text-gray-500" />
+                      </span>
+                    )}
+                  </div>
                 </TableCell>
                 <TableCell
                   className={cn(
@@ -125,9 +133,6 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                   )}
                 >
                   {formatCurrency(transaction.price)}
-                </TableCell>
-                <TableCell className="max-w-[200px] truncate hidden md:table-cell">
-                  {transaction.notes || "-"}
                 </TableCell>
               </TableRow>
             ))
