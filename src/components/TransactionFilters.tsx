@@ -73,13 +73,6 @@ const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
     });
   };
 
-  const handleMonthChange = (month: string | null) => {
-    onFiltersChange({
-      ...filters,
-      month: month === "all" ? null : month,
-    });
-  };
-
   const handleDateFromChange = (date: Date | undefined) => {
     onFiltersChange({
       ...filters,
@@ -139,7 +132,6 @@ const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
       priceRange: { min: undefined, max: undefined },
       searchTerm: "",
       transactionType: "all",
-      month: null,
     });
   };
 
@@ -153,9 +145,10 @@ const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
           Reset Filters
         </Button>
       </div>
-      <div className="flex flex-col md:flex-row gap-4 items-start">
+
+      <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
         {/* Search */}
-        <div className="w-full md:w-1/3 relative">
+        <div className="flex-1 w-full relative">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search transactions..."
@@ -163,26 +156,6 @@ const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
             onChange={handleSearchChange}
             className="w-full pl-9"
           />
-        </div>
-
-        {/* Month Selector */}
-        <div className="w-full md:w-1/4">
-          <Select
-            value={filters.month || ""}
-            onValueChange={(value) => handleMonthChange(value || null)}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select month" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Months</SelectItem>
-              {availableMonths.map((month) => (
-                <SelectItem key={month.value} value={month.value}>
-                  {month.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
         </div>
 
         {/* Transaction Type selector */}
@@ -233,8 +206,6 @@ const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
             </Button>
           </div>
         </div>
-
-        {/* Reset Filters */}
       </div>
 
       {/* Exclude Starting Point Option */}
@@ -368,8 +339,7 @@ const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
         filters.priceRange.min !== undefined ||
         filters.priceRange.max !== undefined ||
         filters.transactionType !== "all" ||
-        filters.excludeStartingPoint ||
-        filters.month) && (
+        filters.excludeStartingPoint) && (
         <div className="pt-2 border-t border-gray-100">
           <Label className="text-xs text-gray-500">Active Filters:</Label>
           <div className="flex flex-wrap gap-2 mt-2">
@@ -379,18 +349,6 @@ const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
                 <X
                   className="ml-1 h-3 w-3 cursor-pointer"
                   onClick={() => setTransactionType("all")}
-                />
-              </Badge>
-            )}
-
-            {filters.month && (
-              <Badge variant="secondary" className="text-xs">
-                Month:{" "}
-                {availableMonths.find((m) => m.value === filters.month)
-                  ?.label || filters.month}
-                <X
-                  className="ml-1 h-3 w-3 cursor-pointer"
-                  onClick={() => handleMonthChange(null)}
                 />
               </Badge>
             )}

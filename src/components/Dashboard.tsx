@@ -28,7 +28,6 @@ const Dashboard: React.FC = () => {
     priceRange: { min: undefined, max: undefined },
     searchTerm: "",
     transactionType: "all",
-    month: null,
   });
   const [sort, setSort] = useState<TransactionSort>({
     field: "date",

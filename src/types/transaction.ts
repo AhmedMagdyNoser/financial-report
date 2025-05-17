@@ -48,5 +48,4 @@ export type TransactionFilters = {
   };
   searchTerm: string;
   transactionType: TransactionType;
-  month: string | null; // Format: "YYYY-MM"
 };
