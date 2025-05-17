@@ -40,7 +40,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onDataLoaded }) => {
             </div>
           </div>
           <p className="text-sm text-gray-500">
-            Required columns: Category, Name, Price, Date, and Notes
+            Required columns: Category, Name, Price, and Date
           </p>
         </div>
       </div>

@@ -24,7 +24,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const validateCSVFormat = (headers: string[]): boolean => {
-    const requiredHeaders = ["Category", "Name", "Price", "Date", "Notes"];
+    const requiredHeaders = ["Category", "Name", "Price", "Date"];
     return requiredHeaders.every((h) =>
       headers.some(
         (header) => header.toLowerCase().trim() === h.toLowerCase().trim()
@@ -50,7 +50,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
           toast({
             title: "Invalid CSV format",
             description:
-              "CSV must include: Category, Name, Price, Date, Notes columns",
+              "CSV must include: Category, Name, Price, Date columns",
             variant: "destructive",
           });
           setIsLoading(false);

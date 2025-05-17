@@ -37,22 +37,6 @@ export const filterTransactions = (
       }
     }
 
-    // Month filter
-    if (filters.month) {
-      try {
-        const txMonth = format(transaction.date, "yyyy-MM");
-        if (txMonth !== filters.month) {
-          return false;
-        }
-      } catch (error) {
-        console.error(
-          "Error formatting date for month filter:",
-          transaction.date
-        );
-        return false;
-      }
-    }
-
     // Date range filter
     if (filters.dateRange.from && filters.dateRange.to) {
       try {
