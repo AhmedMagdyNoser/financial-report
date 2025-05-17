@@ -24,7 +24,7 @@ const TransactionOverviewTab: React.FC<TransactionOverviewTabProps> = ({
 
       {/* Top Transactions */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="shadow-md">
+        <Card className="shadow">
           <CardHeader>
             <CardTitle className="flex items-center text-green-600">
               <ArrowUp className="h-5 w-5 mr-2" />
@@ -42,7 +42,7 @@ const TransactionOverviewTab: React.FC<TransactionOverviewTabProps> = ({
           </CardContent>
         </Card>
 
-        <Card className="shadow-md">
+        <Card className="shadow">
           <CardHeader>
             <CardTitle className="flex items-center text-red-600">
               <ArrowDown className="h-5 w-5 mr-2" />

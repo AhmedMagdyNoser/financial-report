@@ -130,7 +130,7 @@ const EnhancedChartSection: React.FC<EnhancedChartSectionProps> = ({
     <div className="space-y-6">
       {/* First row - Category Breakdown and Income vs Expense */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="shadow-md border-gray-200 hover:shadow-lg transition-shadow">
+        <Card className="shadow">
           <CardHeader className="pb-2">
             <div className="flex items-center flex-wrap gap-4 mb-1 justify-between">
               <CardTitle className="flex items-center gap-2">
@@ -227,7 +227,7 @@ const EnhancedChartSection: React.FC<EnhancedChartSectionProps> = ({
           </CardContent>
         </Card>
 
-        <Card className="shadow-md border-gray-200 hover:shadow-lg transition-shadow">
+        <Card className="shadow">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <PieChartIcon className="h-5 w-5" />
@@ -269,7 +269,7 @@ const EnhancedChartSection: React.FC<EnhancedChartSectionProps> = ({
       </div>
 
       {/* Second row - Time-based charts */}
-      <Card className="shadow-md border-gray-200 hover:shadow-lg transition-shadow">
+      <Card className="shadow">
         <CardHeader className="pb-2">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <CardTitle className="flex items-center gap-2">
