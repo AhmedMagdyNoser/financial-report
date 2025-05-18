@@ -17,6 +17,13 @@ const TransactionOverviewTab: React.FC<TransactionOverviewTabProps> = ({
   topIncomes,
   topExpenses,
 }) => {
+  const noData = (msg: string) => (
+    <div className="flex flex-col items-center justify-center text-gray-600 py-10 gap-3 bg-gray-100 rounded-lg">
+      <SearchX className="h-8 w-8" />
+      <p className="text-center">{msg}</p>
+    </div>
+  );
+
   return (
     <TabsContent value="combined" className="space-y-6">
       {/* Enhanced Charts Section */}
@@ -35,10 +42,7 @@ const TransactionOverviewTab: React.FC<TransactionOverviewTabProps> = ({
             {topIncomes.length > 0 ? (
               <TransactionTable transactions={topIncomes} />
             ) : (
-              <div className="flex flex-col items-center justify-center text-gray-600 py-10 gap-3 bg-gray-100 rounded-lg">
-                <SearchX className="h-8 w-8" />
-                <p className="text-center">No income transactions found</p>
-              </div>
+              noData("No income transactions found")
             )}
           </CardContent>
         </Card>
@@ -54,10 +58,7 @@ const TransactionOverviewTab: React.FC<TransactionOverviewTabProps> = ({
             {topExpenses.length > 0 ? (
               <TransactionTable transactions={topExpenses} />
             ) : (
-              <div className="flex flex-col items-center justify-center text-gray-600 py-10 gap-3 bg-gray-100 rounded-lg">
-                <SearchX className="h-8 w-8" />
-                <p className="text-center">No expense transactions found</p>
-              </div>
+              noData("No expense transactions found")
             )}
           </CardContent>
         </Card>
