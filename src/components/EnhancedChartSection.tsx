@@ -4,7 +4,6 @@ import { Transaction, TransactionType } from "@/types/transaction";
 import {
   formatCurrency,
   getMonthlySummary,
-  getWeeklyTotals,
   getTopCategories,
 } from "@/utils/transaction-utils";
 import {
@@ -28,6 +27,8 @@ import {
   PieChart as PieChartIcon,
   LineChart as LineChartIcon,
   SearchX,
+  ArrowDown,
+  ArrowUp,
 } from "lucide-react";
 
 const COLORS = [
@@ -51,23 +52,11 @@ const EnhancedChartSection: React.FC<EnhancedChartSectionProps> = ({
   transactions,
 }) => {
   const [chartType, setChartType] = useState<TransactionType>("all");
-  const [timeframeType, setTimeframeType] = useState<"weekly" | "monthly">(
-    "monthly"
-  );
 
   // Get category data for bar chart
   const categoryData = getTopCategories(transactions, chartType, 8);
 
-  // Time-based data
-  const weeklyData = Object.entries(getWeeklyTotals(transactions))
-    .map(([week, data]) => ({
-      week,
-      income: data.income,
-      expense: Math.abs(data.expense),
-      balance: data.balance,
-    }))
-    .sort((a, b) => a.week.localeCompare(b.week));
-
+  // Monthly data
   const monthlyData = Object.entries(getMonthlySummary(transactions))
     .map(([month, data]) => ({
       month,
@@ -93,27 +82,6 @@ const EnhancedChartSection: React.FC<EnhancedChartSectionProps> = ({
       ),
     },
   ];
-
-  let timeframeData;
-  let timeframeKey;
-  let timeframeLabel;
-
-  switch (timeframeType) {
-    case "weekly":
-      timeframeData = weeklyData;
-      timeframeKey = "week";
-      timeframeLabel = "Weekly Summary";
-      break;
-    case "monthly":
-      timeframeData = monthlyData;
-      timeframeKey = "month";
-      timeframeLabel = "Monthly Overview";
-      break;
-    default:
-      timeframeData = monthlyData;
-      timeframeKey = "month";
-      timeframeLabel = "Monthly Overview";
-  }
 
   const noDataAvailable = (
     <div className="flex h-full flex-col items-center justify-center text-gray-600 py-10 gap-3 bg-gray-100 rounded-lg">
@@ -272,114 +240,97 @@ const EnhancedChartSection: React.FC<EnhancedChartSectionProps> = ({
         </Card>
       </div>
 
-      {/* Second row - Time-based charts */}
+      {/* Second row - Monthly Overview Chart */}
       <Card className="shadow">
         <CardHeader className="pb-2">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <CardTitle className="flex items-center gap-2">
-              <LineChartIcon className="h-5 w-5" />
-              {timeframeLabel}
-            </CardTitle>
-            <div className="bg-gray-100 p-1 rounded-md flex">
-              <Tab
-                value="weekly"
-                active={timeframeType === "weekly"}
-                onClick={() => setTimeframeType("weekly")}
-              >
-                Weekly
-              </Tab>
-              <Tab
-                value="monthly"
-                active={timeframeType === "monthly"}
-                onClick={() => setTimeframeType("monthly")}
-              >
-                Monthly
-              </Tab>
-            </div>
-          </div>
+          <CardTitle className="flex items-center gap-2 mb-4">
+            <LineChartIcon className="h-5 w-5" />
+            Monthly Overview
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="h-[340px]">
-            {timeframeData.length === 0 ? (
+            {monthlyData.length === 0 ? (
               noDataAvailable
             ) : (
               <ResponsiveContainer width="100%" height="100%">
-                <ComposedChart data={timeframeData}>
+                <ComposedChart data={monthlyData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis
-                    dataKey={timeframeKey}
+                    dataKey="month"
                     tickFormatter={(value) => {
-                      // Format the x-axis labels
-                      if (timeframeType === "weekly") {
-                        // Extract the week number from YYYY-WXX format
-                        const weekNum = value.split("-W")[1];
-                        return `Week ${weekNum}`;
-                      } else {
-                        // For monthly, convert YYYY-MM to MMM YYYY
-                        try {
-                          const year = value.split("-")[0];
-                          const month = value.split("-")[1];
-                          const monthNames = [
-                            "Jan",
-                            "Feb",
-                            "Mar",
-                            "Apr",
-                            "May",
-                            "Jun",
-                            "Jul",
-                            "Aug",
-                            "Sep",
-                            "Oct",
-                            "Nov",
-                            "Dec",
-                          ];
-                          return `${
-                            monthNames[parseInt(month, 10) - 1]
-                          } ${year}`;
-                        } catch (e) {
-                          return value;
-                        }
+                      // For monthly, convert YYYY-MM to MMM YYYY
+                      try {
+                        const year = value.split("-")[0];
+                        const month = value.split("-")[1];
+                        const monthNames = [
+                          "Jan",
+                          "Feb",
+                          "Mar",
+                          "Apr",
+                          "May",
+                          "Jun",
+                          "Jul",
+                          "Aug",
+                          "Sep",
+                          "Oct",
+                          "Nov",
+                          "Dec",
+                        ];
+                        return `${monthNames[parseInt(month, 10) - 1]} ${year}`;
+                      } catch (e) {
+                        return value;
                       }
                     }}
                   />
                   <YAxis tickFormatter={(value) => formatCurrency(value)} />
                   <Tooltip
-                    formatter={(value: number, name: string) => {
-                      if (name === "income")
-                        return [formatCurrency(value), "Income"];
-                      if (name === "expense")
-                        return [formatCurrency(value), "Expense"];
-                      return [formatCurrency(value), "Balance"];
-                    }}
-                    labelFormatter={(value) => {
-                      if (timeframeType === "weekly") {
-                        const weekNum = value.split("-W")[1];
-                        return `Week ${weekNum}`;
-                      } else {
-                        try {
-                          const year = value.split("-")[0];
-                          const month = value.split("-")[1];
-                          const monthNames = [
-                            "January",
-                            "February",
-                            "March",
-                            "April",
-                            "May",
-                            "June",
-                            "July",
-                            "August",
-                            "September",
-                            "October",
-                            "November",
-                            "December",
-                          ];
-                          return `${
-                            monthNames[parseInt(month, 10) - 1]
-                          } ${year}`;
-                        } catch (e) {
-                          return value;
-                        }
+                    content={({ active, payload, label }) => {
+                      if (active && payload && payload.length) {
+                        // Find the data point that corresponds to this label
+                        const dataPoint = monthlyData.find(
+                          (item) => item.month === label
+                        );
+
+                        if (!dataPoint) return null;
+
+                        // Format the date label
+                        const year = label.split("-")[0];
+                        const month = parseInt(label.split("-")[1], 10);
+                        const monthNames = [
+                          "January",
+                          "February",
+                          "March",
+                          "April",
+                          "May",
+                          "June",
+                          "July",
+                          "August",
+                          "September",
+                          "October",
+                          "November",
+                          "December",
+                        ];
+                        const dateLabel = `${monthNames[month - 1]} ${year}`;
+
+                        return (
+                          <div className="bg-white p-3 border rounded shadow-md">
+                            <p className="text-sm font-medium mb-2">
+                              {dateLabel}
+                            </p>
+                            <p className="mb-1 text-green-600">
+                              Income: {formatCurrency(dataPoint.income)}
+                            </p>
+                            <p className="mb-1 text-red-600">
+                              Expense: {formatCurrency(dataPoint.expense)}
+                            </p>
+                            <p className="mb-1 text-indigo-600">
+                              Balance: {formatCurrency(dataPoint.balance)}
+                            </p>
+                          </div>
+                        );
                       }
+                      return null;
                     }}
                   />
                   <Legend />
@@ -413,5 +364,3 @@ const EnhancedChartSection: React.FC<EnhancedChartSectionProps> = ({
 };
 
 export default EnhancedChartSection;
-
-import { ArrowDown, ArrowUp } from "lucide-react";
