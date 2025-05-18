@@ -137,21 +137,12 @@ const EnhancedChartSection: React.FC<EnhancedChartSectionProps> = ({
                 noDataAvailable
               ) : (
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={categoryData} layout="vertical">
-                    <CartesianGrid
-                      strokeDasharray="3 3"
-                      horizontal={true}
-                      vertical={false}
-                    />
+                  <BarChart data={categoryData} layout="horizontal">
+                    <CartesianGrid strokeDasharray="3 3" />
                     <XAxis
-                      type="number"
-                      tickFormatter={(value) => formatCurrency(value)}
-                    />
-                    <YAxis
                       type="category"
                       dataKey="name"
-                      width={120}
-                      tick={{ fontSize: 12 }}
+                      tick={{ fontSize: 10 }}
                     />
                     <Tooltip
                       formatter={(value: number) => [
@@ -169,7 +160,6 @@ const EnhancedChartSection: React.FC<EnhancedChartSectionProps> = ({
                         })`;
                       }}
                     />
-                    <Legend />
                     <Bar
                       dataKey="value"
                       name="Amount"
