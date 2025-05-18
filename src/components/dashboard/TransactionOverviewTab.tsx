@@ -1,7 +1,7 @@
 import React from "react";
 import { TabsContent } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowUp, ArrowDown } from "lucide-react";
+import { ArrowUp, ArrowDown, SearchX } from "lucide-react";
 import EnhancedChartSection from "@/components/EnhancedChartSection";
 import TransactionTable from "@/components/TransactionTable";
 import { Transaction } from "@/types/transaction";
@@ -35,9 +35,10 @@ const TransactionOverviewTab: React.FC<TransactionOverviewTabProps> = ({
             {topIncomes.length > 0 ? (
               <TransactionTable transactions={topIncomes} />
             ) : (
-              <p className="text-center py-8 text-muted-foreground">
-                No income transactions found
-              </p>
+              <div className="flex flex-col items-center justify-center text-gray-600 py-10 gap-3 bg-gray-100 rounded-lg">
+                <SearchX className="h-8 w-8" />
+                <p className="text-center">No income transactions found</p>
+              </div>
             )}
           </CardContent>
         </Card>
@@ -53,9 +54,10 @@ const TransactionOverviewTab: React.FC<TransactionOverviewTabProps> = ({
             {topExpenses.length > 0 ? (
               <TransactionTable transactions={topExpenses} />
             ) : (
-              <p className="text-center py-8 text-muted-foreground">
-                No expense transactions found
-              </p>
+              <div className="flex flex-col items-center justify-center text-gray-600 py-10 gap-3 bg-gray-100 rounded-lg">
+                <SearchX className="h-8 w-8" />
+                <p className="text-center">No expense transactions found</p>
+              </div>
             )}
           </CardContent>
         </Card>

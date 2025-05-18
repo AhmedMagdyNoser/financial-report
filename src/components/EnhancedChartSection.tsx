@@ -1,12 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Transaction, TransactionType } from "@/types/transaction";
 import {
   formatCurrency,
-  getCategoryBreakdown,
-  getDailyTotals,
   getMonthlySummary,
-  formatPercentage,
   getWeeklyTotals,
   getTopCategories,
 } from "@/utils/transaction-utils";
@@ -22,18 +19,15 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  LineChart,
   Line,
-  AreaChart,
-  Area,
   ComposedChart,
 } from "recharts";
 import { Tab } from "@/components/ui/tab";
-import { Tabs } from "@/components/ui/tabs";
 import {
   BarChart as BarChartIcon,
   PieChart as PieChartIcon,
   LineChart as LineChartIcon,
+  SearchX,
 } from "lucide-react";
 
 const COLORS = [
@@ -121,10 +115,12 @@ const EnhancedChartSection: React.FC<EnhancedChartSectionProps> = ({
       timeframeLabel = "Monthly Overview";
   }
 
-  // Custom tooltip formatter for currency values
-  const currencyFormatter = (value: number) => {
-    return formatCurrency(value);
-  };
+  const noDataAvailable = (
+    <div className="flex h-full flex-col items-center justify-center text-gray-600 py-10 gap-3 bg-gray-100 rounded-lg">
+      <SearchX className="h-8 w-8" />
+      <p className="text-center">No data available</p>
+    </div>
+  );
 
   return (
     <div className="space-y-6">
@@ -169,60 +165,64 @@ const EnhancedChartSection: React.FC<EnhancedChartSectionProps> = ({
           </CardHeader>
           <CardContent>
             <div className="h-[340px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={categoryData} layout="vertical">
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    horizontal={true}
-                    vertical={false}
-                  />
-                  <XAxis
-                    type="number"
-                    tickFormatter={(value) => formatCurrency(value)}
-                  />
-                  <YAxis
-                    type="category"
-                    dataKey="name"
-                    width={120}
-                    tick={{ fontSize: 12 }}
-                  />
-                  <Tooltip
-                    formatter={(value: number) => [
-                      formatCurrency(value),
-                      "Amount",
-                    ]}
-                    labelFormatter={(label) => {
-                      const item = categoryData.find(
-                        (item) => item.name === label
-                      );
-                      return `${label} (${
-                        item?.transactionType === "income"
-                          ? "Income"
-                          : "Expense"
-                      })`;
-                    }}
-                  />
-                  <Legend />
-                  <Bar
-                    dataKey="value"
-                    name="Amount"
-                    fill="#8884d8"
-                    barSize={20}
-                    radius={[0, 4, 4, 0]}
-                  >
-                    {categoryData.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={
-                          entry.transactionType === "income"
-                            ? "#10b981"
-                            : "#ef4444"
-                        }
-                      />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+              {categoryData.length === 0 ? (
+                noDataAvailable
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={categoryData} layout="vertical">
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      horizontal={true}
+                      vertical={false}
+                    />
+                    <XAxis
+                      type="number"
+                      tickFormatter={(value) => formatCurrency(value)}
+                    />
+                    <YAxis
+                      type="category"
+                      dataKey="name"
+                      width={120}
+                      tick={{ fontSize: 12 }}
+                    />
+                    <Tooltip
+                      formatter={(value: number) => [
+                        formatCurrency(value),
+                        "Amount",
+                      ]}
+                      labelFormatter={(label) => {
+                        const item = categoryData.find(
+                          (item) => item.name === label
+                        );
+                        return `${label} (${
+                          item?.transactionType === "income"
+                            ? "Income"
+                            : "Expense"
+                        })`;
+                      }}
+                    />
+                    <Legend />
+                    <Bar
+                      dataKey="value"
+                      name="Amount"
+                      fill="#8884d8"
+                      barSize={20}
+                      radius={[0, 4, 4, 0]}
+                    >
+                      {categoryData.map((entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={
+                            entry.transactionType === "income"
+                              ? "#10b981"
+                              : "#ef4444"
+                          }
+                        />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -236,33 +236,37 @@ const EnhancedChartSection: React.FC<EnhancedChartSectionProps> = ({
           </CardHeader>
           <CardContent>
             <div className="h-[340px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={incomeVsExpenseData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={100}
-                    paddingAngle={5}
-                    dataKey="value"
-                    labelLine={false}
-                    label={({ name, percent }) =>
-                      `${name} ${(percent * 100).toFixed(1)}%`
-                    }
-                  >
-                    <Cell key="cell-0" fill="#10b981" />
-                    <Cell key="cell-1" fill="#ef4444" />
-                  </Pie>
-                  <Tooltip
-                    formatter={(value: number) => [
-                      formatCurrency(value),
-                      "Amount",
-                    ]}
-                  />
-                  <Legend verticalAlign="bottom" align="center" />
-                </PieChart>
-              </ResponsiveContainer>
+              {incomeVsExpenseData.every((item) => item.value === 0) ? (
+                noDataAvailable
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={incomeVsExpenseData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={100}
+                      paddingAngle={5}
+                      dataKey="value"
+                      labelLine={false}
+                      label={({ name, percent }) =>
+                        `${name} ${(percent * 100).toFixed(1)}%`
+                      }
+                    >
+                      <Cell key="cell-0" fill="#10b981" />
+                      <Cell key="cell-1" fill="#ef4444" />
+                    </Pie>
+                    <Tooltip
+                      formatter={(value: number) => [
+                        formatCurrency(value),
+                        "Amount",
+                      ]}
+                    />
+                    <Legend verticalAlign="bottom" align="center" />
+                  </PieChart>
+                </ResponsiveContainer>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -296,103 +300,111 @@ const EnhancedChartSection: React.FC<EnhancedChartSectionProps> = ({
         </CardHeader>
         <CardContent>
           <div className="h-[340px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart data={timeframeData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis
-                  dataKey={timeframeKey}
-                  tickFormatter={(value) => {
-                    // Format the x-axis labels
-                    if (timeframeType === "weekly") {
-                      // Extract the week number from YYYY-WXX format
-                      const weekNum = value.split("-W")[1];
-                      return `Week ${weekNum}`;
-                    } else {
-                      // For monthly, convert YYYY-MM to MMM YYYY
-                      try {
-                        const year = value.split("-")[0];
-                        const month = value.split("-")[1];
-                        const monthNames = [
-                          "Jan",
-                          "Feb",
-                          "Mar",
-                          "Apr",
-                          "May",
-                          "Jun",
-                          "Jul",
-                          "Aug",
-                          "Sep",
-                          "Oct",
-                          "Nov",
-                          "Dec",
-                        ];
-                        return `${monthNames[parseInt(month, 10) - 1]} ${year}`;
-                      } catch (e) {
-                        return value;
+            {timeframeData.length === 0 ? (
+              noDataAvailable
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <ComposedChart data={timeframeData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis
+                    dataKey={timeframeKey}
+                    tickFormatter={(value) => {
+                      // Format the x-axis labels
+                      if (timeframeType === "weekly") {
+                        // Extract the week number from YYYY-WXX format
+                        const weekNum = value.split("-W")[1];
+                        return `Week ${weekNum}`;
+                      } else {
+                        // For monthly, convert YYYY-MM to MMM YYYY
+                        try {
+                          const year = value.split("-")[0];
+                          const month = value.split("-")[1];
+                          const monthNames = [
+                            "Jan",
+                            "Feb",
+                            "Mar",
+                            "Apr",
+                            "May",
+                            "Jun",
+                            "Jul",
+                            "Aug",
+                            "Sep",
+                            "Oct",
+                            "Nov",
+                            "Dec",
+                          ];
+                          return `${
+                            monthNames[parseInt(month, 10) - 1]
+                          } ${year}`;
+                        } catch (e) {
+                          return value;
+                        }
                       }
-                    }
-                  }}
-                />
-                <YAxis tickFormatter={(value) => formatCurrency(value)} />
-                <Tooltip
-                  formatter={(value: number, name: string) => {
-                    if (name === "income")
-                      return [formatCurrency(value), "Income"];
-                    if (name === "expense")
-                      return [formatCurrency(value), "Expense"];
-                    return [formatCurrency(value), "Balance"];
-                  }}
-                  labelFormatter={(value) => {
-                    if (timeframeType === "weekly") {
-                      const weekNum = value.split("-W")[1];
-                      return `Week ${weekNum}`;
-                    } else {
-                      try {
-                        const year = value.split("-")[0];
-                        const month = value.split("-")[1];
-                        const monthNames = [
-                          "January",
-                          "February",
-                          "March",
-                          "April",
-                          "May",
-                          "June",
-                          "July",
-                          "August",
-                          "September",
-                          "October",
-                          "November",
-                          "December",
-                        ];
-                        return `${monthNames[parseInt(month, 10) - 1]} ${year}`;
-                      } catch (e) {
-                        return value;
+                    }}
+                  />
+                  <YAxis tickFormatter={(value) => formatCurrency(value)} />
+                  <Tooltip
+                    formatter={(value: number, name: string) => {
+                      if (name === "income")
+                        return [formatCurrency(value), "Income"];
+                      if (name === "expense")
+                        return [formatCurrency(value), "Expense"];
+                      return [formatCurrency(value), "Balance"];
+                    }}
+                    labelFormatter={(value) => {
+                      if (timeframeType === "weekly") {
+                        const weekNum = value.split("-W")[1];
+                        return `Week ${weekNum}`;
+                      } else {
+                        try {
+                          const year = value.split("-")[0];
+                          const month = value.split("-")[1];
+                          const monthNames = [
+                            "January",
+                            "February",
+                            "March",
+                            "April",
+                            "May",
+                            "June",
+                            "July",
+                            "August",
+                            "September",
+                            "October",
+                            "November",
+                            "December",
+                          ];
+                          return `${
+                            monthNames[parseInt(month, 10) - 1]
+                          } ${year}`;
+                        } catch (e) {
+                          return value;
+                        }
                       }
-                    }
-                  }}
-                />
-                <Legend />
-                <Bar
-                  dataKey="income"
-                  name="Income"
-                  fill="#10b981"
-                  barSize={20}
-                />
-                <Bar
-                  dataKey="expense"
-                  name="Expense"
-                  fill="#ef4444"
-                  barSize={20}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="balance"
-                  name="Balance"
-                  stroke="#6366f1"
-                  strokeWidth={2}
-                />
-              </ComposedChart>
-            </ResponsiveContainer>
+                    }}
+                  />
+                  <Legend />
+                  <Bar
+                    dataKey="income"
+                    name="Income"
+                    fill="#10b981"
+                    barSize={20}
+                  />
+                  <Bar
+                    dataKey="expense"
+                    name="Expense"
+                    fill="#ef4444"
+                    barSize={20}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="balance"
+                    name="Balance"
+                    stroke="#6366f1"
+                    strokeWidth={2}
+                  />
+                </ComposedChart>
+              </ResponsiveContainer>
+            )}
           </div>
         </CardContent>
       </Card>
