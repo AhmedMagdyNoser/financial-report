@@ -4,7 +4,7 @@ A modern, interactive financial reporting dashboard built with React, TypeScript
 
 ## 🚀 Live Demo
 
-Check out the live demo at: [https://financial-report-five.vercel.app](https://financial-report-five.vercel.app/)
+Check out the live demo at: [https://personal-financial-report.vercel.app](https://personal-financial-report.vercel.app)
 
 ## ✨ Features
 
