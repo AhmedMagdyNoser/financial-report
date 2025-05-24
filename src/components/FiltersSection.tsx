@@ -1,46 +1,24 @@
-import React from "react";
+import { Category, TransactionFilters, TransactionType } from "@/types/transaction";
+import { cn } from "@/utils/cn";
+import { format } from "date-fns";
+import { formatCurrency } from "@/utils/transaction-utils";
+import { CalendarIcon, Search, X } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Calendar } from "@/components/ui/calendar";
 import { Badge } from "@/components/ui/badge";
-import {
-  Category,
-  TransactionFilters,
-  TransactionType,
-} from "@/types/transaction";
-import { format } from "date-fns";
-import { CalendarIcon, Search, X } from "lucide-react";
-import { cn } from "@/lib/utils";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Calendar } from "@/components/ui/calendar";
 
-interface TransactionFiltersProps {
+interface FiltersSectionProps {
   filters: TransactionFilters;
   onFiltersChange: (filters: TransactionFilters) => void;
   categories: Category[];
-  availableMonths: { value: string; label: string }[];
   className?: string;
 }
 
-const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
-  filters,
-  onFiltersChange,
-  categories,
-  availableMonths,
-  className,
-}) => {
+const FiltersSection: React.FC<FiltersSectionProps> = ({ filters, onFiltersChange, categories, className }) => {
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onFiltersChange({
       ...filters,
@@ -94,8 +72,7 @@ const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
   };
 
   const handleMinPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value =
-      e.target.value === "" ? undefined : parseFloat(e.target.value);
+    const value = e.target.value === "" ? undefined : parseFloat(e.target.value);
     onFiltersChange({
       ...filters,
       priceRange: {
@@ -106,8 +83,7 @@ const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
   };
 
   const handleMaxPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value =
-      e.target.value === "" ? undefined : parseFloat(e.target.value);
+    const value = e.target.value === "" ? undefined : parseFloat(e.target.value);
     onFiltersChange({
       ...filters,
       priceRange: {
@@ -136,9 +112,7 @@ const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
   };
 
   return (
-    <div
-      className={`space-y-4 bg-white p-5 border rounded-xl border-gray-100 shadow ${className}`}
-    >
+    <div className={`space-y-4 bg-white p-5 border rounded-xl border-gray-100 shadow ${className}`}>
       <div className="flex flex-row gap-4 items-center flex-wrap justify-between">
         <h2 className="text-xl font-bold text-gray-800">Filter Transactions</h2>
         <Button size="sm" variant="outline" onClick={resetFilters}>
@@ -166,9 +140,7 @@ const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
               variant={filters.transactionType === "all" ? "default" : "ghost"}
               className={cn(
                 "flex-1 text-xs md:text-sm hover:bg-transparent",
-                filters.transactionType === "all"
-                  ? "bg-white shadow-sm text-gray-900"
-                  : "hover:text-primary"
+                filters.transactionType === "all" ? "bg-white shadow-sm text-gray-900" : "hover:text-primary"
               )}
               onClick={() => setTransactionType("all")}
             >
@@ -176,14 +148,10 @@ const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
             </Button>
             <Button
               type="button"
-              variant={
-                filters.transactionType === "income" ? "default" : "ghost"
-              }
+              variant={filters.transactionType === "income" ? "default" : "ghost"}
               className={cn(
                 "flex-1 text-xs md:text-sm hover:bg-transparent",
-                filters.transactionType === "income"
-                  ? "bg-white text-green-600 shadow-sm"
-                  : "hover:text-green-600"
+                filters.transactionType === "income" ? "bg-white text-green-600 shadow-sm" : "hover:text-green-600"
               )}
               onClick={() => setTransactionType("income")}
             >
@@ -191,14 +159,10 @@ const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
             </Button>
             <Button
               type="button"
-              variant={
-                filters.transactionType === "expense" ? "default" : "ghost"
-              }
+              variant={filters.transactionType === "expense" ? "default" : "ghost"}
               className={cn(
                 "flex-1 text-xs md:text-sm hover:bg-transparent",
-                filters.transactionType === "expense"
-                  ? "bg-white text-red-600 shadow-sm"
-                  : "hover:text-red-600"
+                filters.transactionType === "expense" ? "bg-white text-red-600 shadow-sm" : "hover:text-red-600"
               )}
               onClick={() => setTransactionType("expense")}
             >
@@ -215,10 +179,7 @@ const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
           checked={filters.excludeStartingPoint}
           onCheckedChange={(checked) => toggleStartingPointFilter(!!checked)}
         />
-        <Label
-          htmlFor="excludeStartingPoint"
-          className="text-sm cursor-pointer text-gray-600"
-        >
+        <Label htmlFor="excludeStartingPoint" className="text-sm cursor-pointer text-gray-600">
           Exclude "Starting Point" category
         </Label>
       </div>
@@ -230,14 +191,10 @@ const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
           {categories.map((category) => (
             <Badge
               key={category}
-              variant={
-                filters.categories?.includes(category) ? "default" : "outline"
-              }
+              variant={filters.categories?.includes(category) ? "default" : "outline"}
               className={cn(
                 "cursor-pointer transition-all bg-white",
-                filters.categories?.includes(category)
-                  ? "bg-primary"
-                  : "hover:bg-primary/10"
+                filters.categories?.includes(category) ? "bg-primary" : "hover:bg-primary/10"
               )}
               onClick={() => toggleCategory(category)}
             >
@@ -261,20 +218,11 @@ const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
                 )}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {filters.dateRange.from ? (
-                  format(filters.dateRange.from, "PPP")
-                ) : (
-                  <span>Pick a date</span>
-                )}
+                {filters.dateRange.from ? format(filters.dateRange.from, "PPP") : <span>Pick a date</span>}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="single"
-                selected={filters.dateRange.from}
-                onSelect={handleDateFromChange}
-                initialFocus
-              />
+              <Calendar mode="single" selected={filters.dateRange.from} onSelect={handleDateFromChange} initialFocus />
             </PopoverContent>
           </Popover>
         </div>
@@ -291,20 +239,11 @@ const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
                 )}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {filters.dateRange.to ? (
-                  format(filters.dateRange.to, "PPP")
-                ) : (
-                  <span>Pick a date</span>
-                )}
+                {filters.dateRange.to ? format(filters.dateRange.to, "PPP") : <span>Pick a date</span>}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="single"
-                selected={filters.dateRange.to}
-                onSelect={handleDateToChange}
-                initialFocus
-              />
+              <Calendar mode="single" selected={filters.dateRange.to} onSelect={handleDateToChange} initialFocus />
             </PopoverContent>
           </Popover>
         </div>
@@ -314,21 +253,11 @@ const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label className="text-sm text-gray-500">Min Amount</Label>
-          <Input
-            type="number"
-            placeholder="Min"
-            value={filters.priceRange.min ?? ""}
-            onChange={handleMinPriceChange}
-          />
+          <Input type="number" placeholder="Min" value={filters.priceRange.min ?? ""} onChange={handleMinPriceChange} />
         </div>
         <div className="space-y-2">
           <Label className="text-sm text-gray-500">Max Amount</Label>
-          <Input
-            type="number"
-            placeholder="Max"
-            value={filters.priceRange.max ?? ""}
-            onChange={handleMaxPriceChange}
-          />
+          <Input type="number" placeholder="Max" value={filters.priceRange.max ?? ""} onChange={handleMaxPriceChange} />
         </div>
       </div>
 
@@ -346,20 +275,14 @@ const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
             {filters.transactionType !== "all" && (
               <Badge variant="secondary" className="text-xs">
                 Type: {filters.transactionType}
-                <X
-                  className="ml-1 h-3 w-3 cursor-pointer"
-                  onClick={() => setTransactionType("all")}
-                />
+                <X className="ml-1 h-3 w-3 cursor-pointer" onClick={() => setTransactionType("all")} />
               </Badge>
             )}
 
             {filters.excludeStartingPoint && (
               <Badge variant="secondary" className="text-xs">
                 Exclude Starting Point
-                <X
-                  className="ml-1 h-3 w-3 cursor-pointer"
-                  onClick={() => toggleStartingPointFilter(false)}
-                />
+                <X className="ml-1 h-3 w-3 cursor-pointer" onClick={() => toggleStartingPointFilter(false)} />
               </Badge>
             )}
 
@@ -367,30 +290,21 @@ const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
               filters.categories.map((cat) => (
                 <Badge key={cat} variant="secondary" className="text-xs">
                   {cat}
-                  <X
-                    className="ml-1 h-3 w-3 cursor-pointer"
-                    onClick={() => toggleCategory(cat)}
-                  />
+                  <X className="ml-1 h-3 w-3 cursor-pointer" onClick={() => toggleCategory(cat)} />
                 </Badge>
               ))}
 
             {filters.dateRange.from && (
               <Badge variant="secondary" className="text-xs">
                 From: {format(filters.dateRange.from, "MMM d, yyyy")}
-                <X
-                  className="ml-1 h-3 w-3 cursor-pointer"
-                  onClick={() => handleDateFromChange(undefined)}
-                />
+                <X className="ml-1 h-3 w-3 cursor-pointer" onClick={() => handleDateFromChange(undefined)} />
               </Badge>
             )}
 
             {filters.dateRange.to && (
               <Badge variant="secondary" className="text-xs">
                 To: {format(filters.dateRange.to, "MMM d, yyyy")}
-                <X
-                  className="ml-1 h-3 w-3 cursor-pointer"
-                  onClick={() => handleDateToChange(undefined)}
-                />
+                <X className="ml-1 h-3 w-3 cursor-pointer" onClick={() => handleDateToChange(undefined)} />
               </Badge>
             )}
 
@@ -430,6 +344,4 @@ const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
   );
 };
 
-export default TransactionFiltersComponent;
-
-import { formatCurrency } from "@/utils/transaction-utils";
+export default FiltersSection;

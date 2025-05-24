@@ -1,7 +1,6 @@
-import React from "react";
+import { Transaction } from "@/types/transaction";
 import { BarChart, FileX } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Transaction } from "@/types/transaction";
 
 interface DashboardHeaderProps {
   transactions: Transaction[];
@@ -9,10 +8,7 @@ interface DashboardHeaderProps {
   onCloseFile: () => void;
 }
 
-const DashboardHeader: React.FC<DashboardHeaderProps> = ({
-  transactions,
-  onCloseFile,
-}) => {
+const DashboardHeader: React.FC<DashboardHeaderProps> = ({ transactions, onCloseFile }) => {
   return (
     <header className="max-w-7xl mx-auto mb-4 md:mb-6">
       <div className="flex flex-col md:flex-row justify-between gap-4">
@@ -21,9 +17,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             <BarChart className="h-8 w-8 mr-3 text-blue-500" />
             Financial Report
           </h1>
-          <p className="text-gray-600">
-            Track, analyze, and optimize your financial activity
-          </p>
+          <p className="text-gray-600">Track, analyze, and optimize your financial activity</p>
         </div>
 
         {transactions.length > 0 ? (

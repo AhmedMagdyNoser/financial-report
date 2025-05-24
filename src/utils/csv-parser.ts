@@ -12,24 +12,7 @@ export const parseCSV = (content: string): Transaction[] => {
   const transactions: Transaction[] = [];
 
   // Define all valid categories
-  const validCategories: Category[] = [
-    "Unknown",
-    "Orange Fees",
-    "Etisalat Fees",
-    "Others",
-    "Drink",
-    "Transportation",
-    "Snacks",
-    "Food",
-    "Support",
-    "Salary",
-    "Clothes",
-    "Starting Point",
-    "Hair Cut",
-    "Football",
-    "Donation",
-    "Document",
-  ];
+  const validCategories: Category[] = [];
 
   for (let i = 1; i < lines.length; i++) {
     // Handle CSV with quotes that might contain commas

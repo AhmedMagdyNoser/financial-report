@@ -1,9 +1,8 @@
-import React from "react";
-import { TabsContent } from "@/components/ui/tabs";
+import { Transaction, TransactionSort } from "@/types/transaction";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { TabsContent } from "@/components/ui/tabs";
 import TransactionTable from "@/components/TransactionTable";
 import TransactionSortComponent from "@/components/TransactionSort";
-import { Transaction, TransactionSort } from "@/types/transaction";
 
 interface AllTransactionsTabProps {
   sortedTransactions: Transaction[];
@@ -11,11 +10,7 @@ interface AllTransactionsTabProps {
   onSortChange: (sort: TransactionSort) => void;
 }
 
-const AllTransactionsTab: React.FC<AllTransactionsTabProps> = ({
-  sortedTransactions,
-  sort,
-  onSortChange,
-}) => {
+const TransactionsTab: React.FC<AllTransactionsTabProps> = ({ sortedTransactions, sort, onSortChange }) => {
   return (
     <TabsContent value="transactions" className="space-y-6">
       <Card className="shadow-md">
@@ -24,15 +19,11 @@ const AllTransactionsTab: React.FC<AllTransactionsTabProps> = ({
           <TransactionSortComponent sort={sort} onSortChange={onSortChange} />
         </CardHeader>
         <CardContent>
-          <TransactionTable
-            transactions={sortedTransactions}
-            sort={sort}
-            onSortChange={onSortChange}
-          />
+          <TransactionTable transactions={sortedTransactions} sort={sort} onSortChange={onSortChange} />
         </CardContent>
       </Card>
     </TabsContent>
   );
 };
 
-export default AllTransactionsTab;
+export default TransactionsTab;

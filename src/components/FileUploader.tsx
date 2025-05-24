@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { parseCSV } from "@/utils/csv-parser";
@@ -25,11 +25,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
 
   const validateCSVFormat = (headers: string[]): boolean => {
     const requiredHeaders = ["Category", "Name", "Price", "Date"];
-    return requiredHeaders.every((h) =>
-      headers.some(
-        (header) => header.toLowerCase().trim() === h.toLowerCase().trim()
-      )
-    );
+    return requiredHeaders.every((h) => headers.some((header) => header.toLowerCase().trim() === h.toLowerCase().trim()));
   };
 
   const handleFileRead = (file: File) => {
@@ -42,15 +38,12 @@ const FileUploader: React.FC<FileUploaderProps> = ({
 
         // Validate CSV format first
         const firstLine = content.split("\n")[0];
-        const headers = firstLine
-          .split(",")
-          .map((h) => h.trim().replace(/"/g, ""));
+        const headers = firstLine.split(",").map((h) => h.trim().replace(/"/g, ""));
 
         if (!validateCSVFormat(headers)) {
           toast({
             title: "Invalid CSV format",
-            description:
-              "CSV must include: Category, Name, Price, Date columns",
+            description: "CSV must include: Category, Name, Price, Date columns",
             variant: "destructive",
           });
           setIsLoading(false);
@@ -140,13 +133,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
   if (compact) {
     return (
       <div className={`${className}`}>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".csv"
-          className="hidden"
-          onChange={handleFileChange}
-        />
+        <input ref={fileInputRef} type="file" accept=".csv" className="hidden" onChange={handleFileChange} />
         <Button
           variant="outline"
           size="sm"
@@ -183,9 +170,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
 
           <div>
             <h3 className="text-lg font-medium">Upload CSV File</h3>
-            <p className="text-sm text-muted-foreground">
-              Drag & drop your CSV file here, or click to browse
-            </p>
+            <p className="text-sm text-muted-foreground">Drag & drop your CSV file here, or click to browse</p>
           </div>
 
           <input

@@ -1,11 +1,8 @@
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Transaction, TransactionType } from "@/types/transaction";
-import {
-  formatCurrency,
-  getMonthlySummary,
-  getTopCategories,
-} from "@/utils/transaction-utils";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatCurrency, getMonthlySummary, getTopCategories } from "@/utils/transaction-utils";
+import { Tab } from "@/components/ui/tab";
 import {
   ResponsiveContainer,
   PieChart,
@@ -21,7 +18,6 @@ import {
   Line,
   ComposedChart,
 } from "recharts";
-import { Tab } from "@/components/ui/tab";
 import {
   BarChart as BarChartIcon,
   PieChart as PieChartIcon,
@@ -31,26 +27,11 @@ import {
   ArrowUp,
 } from "lucide-react";
 
-const COLORS = [
-  "#3b82f6",
-  "#ef4444",
-  "#10b981",
-  "#f59e0b",
-  "#6366f1",
-  "#8b5cf6",
-  "#ec4899",
-  "#14b8a6",
-  "#6b7280",
-  "#475569",
-];
-
-interface EnhancedChartSectionProps {
+interface ChartSectionProps {
   transactions: Transaction[];
 }
 
-const EnhancedChartSection: React.FC<EnhancedChartSectionProps> = ({
-  transactions,
-}) => {
+const ChartSection: React.FC<ChartSectionProps> = ({ transactions }) => {
   const [chartType, setChartType] = useState<TransactionType>("all");
 
   // Get category data for bar chart
@@ -69,17 +50,11 @@ const EnhancedChartSection: React.FC<EnhancedChartSectionProps> = ({
   const incomeVsExpenseData = [
     {
       name: "Income",
-      value: transactions
-        .filter((tx) => tx.price >= 0)
-        .reduce((sum, tx) => sum + tx.price, 0),
+      value: transactions.filter((tx) => tx.price >= 0).reduce((sum, tx) => sum + tx.price, 0),
     },
     {
       name: "Expense",
-      value: Math.abs(
-        transactions
-          .filter((tx) => tx.price < 0)
-          .reduce((sum, tx) => sum + tx.price, 0)
-      ),
+      value: Math.abs(transactions.filter((tx) => tx.price < 0).reduce((sum, tx) => sum + tx.price, 0)),
     },
   ];
 
@@ -139,43 +114,17 @@ const EnhancedChartSection: React.FC<EnhancedChartSectionProps> = ({
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={categoryData} layout="horizontal">
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis
-                      type="category"
-                      dataKey="name"
-                      tick={{ fontSize: 10 }}
-                    />
+                    <XAxis type="category" dataKey="name" tick={{ fontSize: 10 }} />
                     <Tooltip
-                      formatter={(value: number) => [
-                        formatCurrency(value),
-                        "Amount",
-                      ]}
+                      formatter={(value: number) => [formatCurrency(value), "Amount"]}
                       labelFormatter={(label) => {
-                        const item = categoryData.find(
-                          (item) => item.name === label
-                        );
-                        return `${label} (${
-                          item?.transactionType === "income"
-                            ? "Income"
-                            : "Expense"
-                        })`;
+                        const item = categoryData.find((item) => item.name === label);
+                        return `${label} (${item?.transactionType === "income" ? "Income" : "Expense"})`;
                       }}
                     />
-                    <Bar
-                      dataKey="value"
-                      name="Amount"
-                      fill="#8884d8"
-                      barSize={20}
-                      radius={[0, 4, 4, 0]}
-                    >
+                    <Bar dataKey="value" name="Amount" fill="#8884d8" barSize={20} radius={[0, 4, 4, 0]}>
                       {categoryData.map((entry, index) => (
-                        <Cell
-                          key={`cell-${index}`}
-                          fill={
-                            entry.transactionType === "income"
-                              ? "#10b981"
-                              : "#ef4444"
-                          }
-                        />
+                        <Cell key={`cell-${index}`} fill={entry.transactionType === "income" ? "#10b981" : "#ef4444"} />
                       ))}
                     </Bar>
                   </BarChart>
@@ -208,19 +157,12 @@ const EnhancedChartSection: React.FC<EnhancedChartSectionProps> = ({
                       paddingAngle={5}
                       dataKey="value"
                       labelLine={false}
-                      label={({ name, percent }) =>
-                        `${name} ${(percent * 100).toFixed(1)}%`
-                      }
+                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(1)}%`}
                     >
                       <Cell key="cell-0" fill="#10b981" />
                       <Cell key="cell-1" fill="#ef4444" />
                     </Pie>
-                    <Tooltip
-                      formatter={(value: number) => [
-                        formatCurrency(value),
-                        "Amount",
-                      ]}
-                    />
+                    <Tooltip formatter={(value: number) => [formatCurrency(value), "Amount"]} />
                     <Legend verticalAlign="bottom" align="center" />
                   </PieChart>
                 </ResponsiveContainer>
@@ -278,9 +220,7 @@ const EnhancedChartSection: React.FC<EnhancedChartSectionProps> = ({
                     content={({ active, payload, label }) => {
                       if (active && payload && payload.length) {
                         // Find the data point that corresponds to this label
-                        const dataPoint = monthlyData.find(
-                          (item) => item.month === label
-                        );
+                        const dataPoint = monthlyData.find((item) => item.month === label);
 
                         if (!dataPoint) return null;
 
@@ -305,18 +245,10 @@ const EnhancedChartSection: React.FC<EnhancedChartSectionProps> = ({
 
                         return (
                           <div className="bg-white p-3 border rounded shadow-md">
-                            <p className="text-sm font-medium mb-2">
-                              {dateLabel}
-                            </p>
-                            <p className="mb-1 text-green-600">
-                              Income: {formatCurrency(dataPoint.income)}
-                            </p>
-                            <p className="mb-1 text-red-600">
-                              Expense: {formatCurrency(dataPoint.expense)}
-                            </p>
-                            <p className="mb-1 text-indigo-600">
-                              Balance: {formatCurrency(dataPoint.balance)}
-                            </p>
+                            <p className="text-sm font-medium mb-2">{dateLabel}</p>
+                            <p className="mb-1 text-green-600">Income: {formatCurrency(dataPoint.income)}</p>
+                            <p className="mb-1 text-red-600">Expense: {formatCurrency(dataPoint.expense)}</p>
+                            <p className="mb-1 text-indigo-600">Balance: {formatCurrency(dataPoint.balance)}</p>
                           </div>
                         );
                       }
@@ -324,25 +256,9 @@ const EnhancedChartSection: React.FC<EnhancedChartSectionProps> = ({
                     }}
                   />
                   <Legend />
-                  <Bar
-                    dataKey="income"
-                    name="Income"
-                    fill="#10b981"
-                    barSize={20}
-                  />
-                  <Bar
-                    dataKey="expense"
-                    name="Expense"
-                    fill="#ef4444"
-                    barSize={20}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="balance"
-                    name="Balance"
-                    stroke="#6366f1"
-                    strokeWidth={2}
-                  />
+                  <Bar dataKey="income" name="Income" fill="#10b981" barSize={20} />
+                  <Bar dataKey="expense" name="Expense" fill="#ef4444" barSize={20} />
+                  <Line type="monotone" dataKey="balance" name="Balance" stroke="#6366f1" strokeWidth={2} />
                 </ComposedChart>
               </ResponsiveContainer>
             )}
@@ -353,4 +269,4 @@ const EnhancedChartSection: React.FC<EnhancedChartSectionProps> = ({
   );
 };
 
-export default EnhancedChartSection;
+export default ChartSection;

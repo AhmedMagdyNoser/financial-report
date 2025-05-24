@@ -1,17 +1,9 @@
-import React from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { formatCurrency } from "@/utils/transaction-utils";
 import { Transaction, TransactionSort } from "@/types/transaction";
+import { formatCurrency } from "@/utils/transaction-utils";
 import { format } from "date-fns";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/cn";
 import { Badge } from "@/components/ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AlertCircle, ArrowDown, ArrowUp } from "lucide-react";
 
 interface TransactionTableProps {
@@ -59,35 +51,17 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
     );
   };
 
-  console.log("TransactionTable transactions", transactions);
-
   return (
     <div className={`overflow-auto rounded-md border ${className}`}>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead
-              className="whitespace-nowrap cursor-pointer"
-              onClick={() => handleSortClick("date")}
-            >
+            <TableHead className="whitespace-nowrap cursor-pointer" onClick={() => handleSortClick("date")}>
               Date <SortIndicator field="date" />
             </TableHead>
-            <TableHead
-              className="cursor-pointer"
-              onClick={() => handleSortClick("category")}
-            >
-              Category <SortIndicator field="category" />
-            </TableHead>
-            <TableHead
-              className="cursor-pointer whitespace-nowrap"
-              onClick={() => handleSortClick("name")}
-            >
-              Name <SortIndicator field="name" />
-            </TableHead>
-            <TableHead
-              className="text-right whitespace-nowrap cursor-pointer"
-              onClick={() => handleSortClick("price")}
-            >
+            <TableHead>Category</TableHead>
+            <TableHead className="whitespace-nowrap">Name</TableHead>
+            <TableHead className="text-right whitespace-nowrap cursor-pointer" onClick={() => handleSortClick("price")}>
               Amount <SortIndicator field="price" />
             </TableHead>
           </TableRow>
@@ -95,24 +69,16 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
         <TableBody>
           {transactions.length === 0 ? (
             <TableRow>
-              <TableCell
-                colSpan={5}
-                className="text-center py-8 text-muted-foreground"
-              >
+              <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
                 No transactions found
               </TableCell>
             </TableRow>
           ) : (
             transactions.map((transaction) => (
               <TableRow key={transaction.id} className="hover:bg-gray-50">
-                <TableCell className="whitespace-nowrap">
-                  {format(transaction.date, "MMM d, yyyy")}
-                </TableCell>
+                <TableCell className="whitespace-nowrap">{format(transaction.date, "MMM d, yyyy")}</TableCell>
                 <TableCell>
-                  <Badge
-                    variant="outline"
-                    className="font-normal bg-gray-50 text-nowrap"
-                  >
+                  <Badge variant="outline" className="font-normal bg-gray-50 text-nowrap">
                     {transaction.category}
                   </Badge>
                 </TableCell>

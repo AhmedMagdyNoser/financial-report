@@ -1,22 +1,10 @@
-import {
-  Category,
-  Transaction,
-  TransactionFilters,
-  TransactionType,
-  TransactionSort,
-} from "@/types/transaction";
+import { Category, Transaction, TransactionFilters, TransactionType, TransactionSort } from "@/types/transaction";
 import { isWithinInterval, format, parse } from "date-fns";
 
-export const filterTransactions = (
-  transactions: Transaction[],
-  filters: TransactionFilters
-): Transaction[] => {
+export const filterTransactions = (transactions: Transaction[], filters: TransactionFilters): Transaction[] => {
   return transactions.filter((transaction) => {
     // Exclude Starting Point category if filter is active
-    if (
-      filters.excludeStartingPoint &&
-      transaction.category === "Starting Point"
-    ) {
+    if (filters.excludeStartingPoint && transaction.category === "Starting Point") {
       return false;
     }
 
@@ -76,16 +64,10 @@ export const filterTransactions = (
     }
 
     // Price range filter
-    if (
-      filters.priceRange.min !== undefined &&
-      transaction.price < filters.priceRange.min
-    ) {
+    if (filters.priceRange.min !== undefined && transaction.price < filters.priceRange.min) {
       return false;
     }
-    if (
-      filters.priceRange.max !== undefined &&
-      transaction.price > filters.priceRange.max
-    ) {
+    if (filters.priceRange.max !== undefined && transaction.price > filters.priceRange.max) {
       return false;
     }
 
@@ -105,25 +87,18 @@ export const filterTransactions = (
 };
 
 export const calculateTotalExpense = (transactions: Transaction[]): number => {
-  return transactions
-    .filter((tx) => tx.price < 0)
-    .reduce((sum, transaction) => sum + Math.abs(transaction.price), 0);
+  return transactions.filter((tx) => tx.price < 0).reduce((sum, transaction) => sum + Math.abs(transaction.price), 0);
 };
 
 export const calculateTotalIncome = (transactions: Transaction[]): number => {
-  return transactions
-    .filter((tx) => tx.price >= 0)
-    .reduce((sum, transaction) => sum + transaction.price, 0);
+  return transactions.filter((tx) => tx.price >= 0).reduce((sum, transaction) => sum + transaction.price, 0);
 };
 
 export const calculateNetBalance = (transactions: Transaction[]): number => {
   return transactions.reduce((sum, transaction) => sum + transaction.price, 0);
 };
 
-export const getCategoryTotals = (
-  transactions: Transaction[],
-  type: TransactionType = "all"
-): Record<string, number> => {
+export const getCategoryTotals = (transactions: Transaction[], type: TransactionType = "all"): Record<string, number> => {
   const filteredTransactions =
     type === "all"
       ? transactions
@@ -144,10 +119,7 @@ export const getCategoryTotals = (
   return categoryTotals;
 };
 
-export const getDailyTotals = (
-  transactions: Transaction[],
-  type: TransactionType = "all"
-): Record<string, number> => {
+export const getDailyTotals = (transactions: Transaction[], type: TransactionType = "all"): Record<string, number> => {
   const filteredTransactions =
     type === "all"
       ? transactions
@@ -165,8 +137,7 @@ export const getDailyTotals = (
       if (!dailyTotals[dateStr]) {
         dailyTotals[dateStr] = 0;
       }
-      dailyTotals[dateStr] +=
-        type === "expense" ? Math.abs(transaction.price) : transaction.price;
+      dailyTotals[dateStr] += type === "expense" ? Math.abs(transaction.price) : transaction.price;
     } catch (error) {
       console.error("Error processing date for transaction:", transaction);
       // Skip this transaction if date is invalid
@@ -176,9 +147,7 @@ export const getDailyTotals = (
   return dailyTotals;
 };
 
-export const getUniqueCategories = (
-  transactions: Transaction[]
-): Category[] => {
+export const getUniqueCategories = (transactions: Transaction[]): Category[] => {
   const categories = new Set<Category>();
   transactions.forEach((tx) => {
     if (tx.category) categories.add(tx.category);
@@ -189,15 +158,10 @@ export const getUniqueCategories = (
 export const getMonthlySummary = (
   transactions: Transaction[]
 ): Record<string, { income: number; expense: number; balance: number }> => {
-  const monthlySummary: Record<
-    string,
-    { income: number; expense: number; balance: number }
-  > = {};
+  const monthlySummary: Record<string, { income: number; expense: number; balance: number }> = {};
 
   // Sort transactions by date first to ensure chronological order
-  const sortedTransactions = [...transactions].sort(
-    (a, b) => a.date.getTime() - b.date.getTime()
-  );
+  const sortedTransactions = [...transactions].sort((a, b) => a.date.getTime() - b.date.getTime());
 
   sortedTransactions.forEach((transaction) => {
     try {
@@ -228,10 +192,7 @@ export const getCategoryBreakdown = (
   type: TransactionType = "all"
 ): { name: string; value: number; percentage: number }[] => {
   const categoryTotals = getCategoryTotals(transactions, type);
-  const total = Object.values(categoryTotals).reduce(
-    (sum, value) => sum + value,
-    0
-  );
+  const total = Object.values(categoryTotals).reduce((sum, value) => sum + value, 0);
 
   return Object.entries(categoryTotals)
     .map(([name, value]) => ({
@@ -259,48 +220,23 @@ export const formatPercentage = (value: number): string => {
   }).format(value / 100);
 };
 
-export const getTopTransactions = (
-  transactions: Transaction[],
-  type: TransactionType,
-  limit: number
-): Transaction[] => {
+export const getTopTransactions = (transactions: Transaction[], type: TransactionType, limit: number): Transaction[] => {
   const filtered =
-    type === "income"
-      ? transactions.filter((tx) => tx.price >= 0)
-      : transactions.filter((tx) => tx.price < 0);
+    type === "income" ? transactions.filter((tx) => tx.price >= 0) : transactions.filter((tx) => tx.price < 0);
 
   return [...filtered]
-    .sort((a, b) =>
-      type === "income"
-        ? b.price - a.price
-        : Math.abs(b.price) - Math.abs(a.price)
-    )
+    .sort((a, b) => (type === "income" ? b.price - a.price : Math.abs(b.price) - Math.abs(a.price)))
     .slice(0, limit);
 };
 
 // Sort transactions based on the provided sort options
-export const sortTransactions = (
-  transactions: Transaction[],
-  sort: TransactionSort
-): Transaction[] => {
+export const sortTransactions = (transactions: Transaction[], sort: TransactionSort): Transaction[] => {
   return [...transactions].sort((a, b) => {
     switch (sort.field) {
       case "date":
-        return sort.direction === "asc"
-          ? a.date.getTime() - b.date.getTime()
-          : b.date.getTime() - a.date.getTime();
+        return sort.direction === "asc" ? a.date.getTime() - b.date.getTime() : b.date.getTime() - a.date.getTime();
       case "price":
         return sort.direction === "asc" ? a.price - b.price : b.price - a.price;
-      case "category":
-        return sort.direction === "asc"
-          ? a.category.localeCompare(b.category)
-          : b.category.localeCompare(a.category);
-      case "name":
-        const aName = a.name || "";
-        const bName = b.name || "";
-        return sort.direction === "asc"
-          ? aName.localeCompare(bName)
-          : bName.localeCompare(aName);
       default:
         return 0;
     }
@@ -351,15 +287,10 @@ export const getTopCategories = (
 
 // Get weekly totals in chronological order
 export const getWeeklyTotals = (transactions: Transaction[]) => {
-  const weeklyTotals: Record<
-    string,
-    { income: number; expense: number; balance: number }
-  > = {};
+  const weeklyTotals: Record<string, { income: number; expense: number; balance: number }> = {};
 
   // Sort transactions by date
-  const sortedTransactions = [...transactions].sort(
-    (a, b) => a.date.getTime() - b.date.getTime()
-  );
+  const sortedTransactions = [...transactions].sort((a, b) => a.date.getTime() - b.date.getTime());
 
   sortedTransactions.forEach((tx) => {
     // Get ISO week number (YYYY-WW)
@@ -370,9 +301,7 @@ export const getWeeklyTotals = (transactions: Transaction[]) => {
     // First day of the year
     const firstDay = new Date(year, 0, 1);
     // Calculate days passed
-    const daysPassed = Math.floor(
-      (date.getTime() - firstDay.getTime()) / (24 * 60 * 60 * 1000)
-    );
+    const daysPassed = Math.floor((date.getTime() - firstDay.getTime()) / (24 * 60 * 60 * 1000));
     // Calculate week number
     const weekNumber = Math.ceil((daysPassed + firstDay.getDay() + 1) / 7);
 
@@ -396,9 +325,7 @@ export const getWeeklyTotals = (transactions: Transaction[]) => {
 };
 
 // Get months for filtering
-export const getAvailableMonths = (
-  transactions: Transaction[]
-): { value: string; label: string }[] => {
+export const getAvailableMonths = (transactions: Transaction[]): { value: string; label: string }[] => {
   const months = new Set<string>();
 
   transactions.forEach((tx) => {

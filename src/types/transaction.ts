@@ -1,20 +1,4 @@
-export type Category =
-  | "Unknown"
-  | "Orange Fees"
-  | "Etisalat Fees"
-  | "Others"
-  | "Drink"
-  | "Transportation"
-  | "Snacks"
-  | "Food"
-  | "Support"
-  | "Salary"
-  | "Clothes"
-  | "Starting Point"
-  | "Hair Cut"
-  | "Football"
-  | "Donation"
-  | "Document";
+export type Category = string;
 
 export interface Transaction {
   id: string;
@@ -27,7 +11,7 @@ export interface Transaction {
 
 export type TransactionType = "income" | "expense" | "all";
 
-export type SortField = "date" | "price" | "category" | "name";
+export type SortField = "date" | "price";
 export type SortDirection = "asc" | "desc";
 
 export interface TransactionSort {

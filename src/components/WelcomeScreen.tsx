@@ -1,4 +1,3 @@
-import React from "react";
 import { Card } from "@/components/ui/card";
 import { Upload, FileText, BarChart2 } from "lucide-react";
 import FileUploader from "@/components/FileUploader";
@@ -17,17 +16,11 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onDataLoaded }) => {
             <BarChart2 className="w-8 h-8 text-blue-600" />
           </div>
         </div>
-        <h2 className="text-3xl font-bold text-gray-900 mb-4">
-          Welcome to Your Financial Dashboard
-        </h2>
+        <h2 className="text-3xl font-bold text-gray-900 mb-4">Welcome to Your Financial Dashboard</h2>
         <p className="text-gray-600 text-lg mb-6">
-          Upload your financial data to generate comprehensive insights and
-          visualizations
+          Upload your financial data to generate comprehensive insights and visualizations
         </p>
-        <FileUploader
-          onDataLoaded={onDataLoaded}
-          className="max-w-sm mx-auto mb-8"
-        />
+        <FileUploader onDataLoaded={onDataLoaded} className="max-w-sm mx-auto mb-8" />
         <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
           <div className="flex items-center justify-center gap-4 mb-4">
             <div className="flex items-center gap-2">
@@ -39,9 +32,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onDataLoaded }) => {
               <span className="text-sm text-gray-600">Easy Upload</span>
             </div>
           </div>
-          <p className="text-sm text-gray-500">
-            Required columns: Category, Name, Price, and Date
-          </p>
+          <p className="text-sm text-gray-500">Required columns: Category, Name, Price, and Date</p>
         </div>
       </div>
     </Card>

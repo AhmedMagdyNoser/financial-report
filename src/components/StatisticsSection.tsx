@@ -1,9 +1,37 @@
 import React from "react";
-import { cn } from "@/lib/utils";
+import { ArrowUp, ArrowDown, BarChart } from "lucide-react";
+import { formatCurrency } from "@/utils/transaction-utils";
 import { Card } from "@/components/ui/card";
-import { ArrowDown, ArrowUp } from "lucide-react";
+import { cn } from "@/utils/cn";
 
-interface StatCardProps {
+interface StatisticsSectionProps {
+  totalIncome: number;
+  totalExpense: number;
+  netBalance: number;
+}
+
+const StatisticsSection: React.FC<StatisticsSectionProps> = ({ totalIncome, totalExpense, netBalance }) => {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <StatisticsCard title="Total Income" value={formatCurrency(totalIncome)} icon={<ArrowUp />} variant="income" />
+
+      <StatisticsCard title="Total Expenses" value={formatCurrency(totalExpense)} icon={<ArrowDown />} variant="expense" />
+
+      <StatisticsCard
+        title="Net Balance"
+        value={formatCurrency(netBalance)}
+        icon={<BarChart />}
+        variant={netBalance >= 0 ? "income" : "expense"}
+      />
+    </div>
+  );
+};
+
+export default StatisticsSection;
+
+// =============================================================
+
+interface StatisticsProps {
   title: string;
   value: string;
   description?: string;
@@ -14,7 +42,7 @@ interface StatCardProps {
   className?: string;
 }
 
-const StatCard: React.FC<StatCardProps> = ({
+const StatisticsCard: React.FC<StatisticsProps> = ({
   title,
   value,
   description,
@@ -54,12 +82,8 @@ const StatCard: React.FC<StatCardProps> = ({
       <div className="flex items-start justify-between">
         <div>
           <p className="text-sm font-medium text-gray-500 mb-1">{title}</p>
-          <h3 className={cn("text-2xl font-bold", styles.valueColor)}>
-            {value}
-          </h3>
-          {description && (
-            <p className="text-xs text-gray-500 mt-1">{description}</p>
-          )}
+          <h3 className={cn("text-2xl font-bold", styles.valueColor)}>{value}</h3>
+          {description && <p className="text-xs text-gray-500 mt-1">{description}</p>}
 
           {trend !== undefined && (
             <div className="flex items-center mt-2">
@@ -71,15 +95,10 @@ const StatCard: React.FC<StatCardProps> = ({
               <span
                 className={cn(
                   "text-xs font-medium",
-                  trend > 0
-                    ? "text-green-500"
-                    : trend < 0
-                    ? "text-red-500"
-                    : "text-gray-500"
+                  trend > 0 ? "text-green-500" : trend < 0 ? "text-red-500" : "text-gray-500"
                 )}
               >
-                {Math.abs(trend)}%{" "}
-                {trendLabel || (trend > 0 ? "increase" : "decrease")}
+                {Math.abs(trend)}% {trendLabel || (trend > 0 ? "increase" : "decrease")}
               </span>
             </div>
           )}
@@ -96,5 +115,3 @@ const StatCard: React.FC<StatCardProps> = ({
     </Card>
   );
 };
-
-export default StatCard;
